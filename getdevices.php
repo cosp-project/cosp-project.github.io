@@ -1,8 +1,5 @@
 <?php
 
-header('Content-Type: application/json');
-
-// Lookup all devices directories
 $dirs = array_filter(glob('*'), 'is_dir');
 $devices = array_values($dirs);
 
@@ -11,7 +8,10 @@ if (($key = array_search('test', $devices)) !== false) {
     unset($devices[$key]);
 }
 
-// Output the result
 $devices = array_reverse($devices);
 sort($devices);
+
+// Output the result
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 echo json_encode($devices);
