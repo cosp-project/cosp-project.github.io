@@ -1,5 +1,14 @@
 // Global animation time (ms)
-var atime = 500; var startup = true; var mDeviceList = null; var debug = false;
+var atime = 500;
+
+// Miscelaneous global variables initialization
+var startup = true; var mDeviceList = null; var debug = false;
+
+// Build list server URL
+var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
+
+// Device list server url
+var mDeviceListURL = 'https://mirror.codebucket.de/cosp/getdevices.php';
 
 // Display debugging info in console (only if enabled)
 function log(info) { if (debug) { console.log(info); } }
@@ -42,9 +51,9 @@ function update()
     $('#builds').remove();
   }
   // Request the list of builds.
-  reqURL = 'https://cosp-webserver.herokuapp.com/checkUpdate?device=' + $('#devices option:selected').text();
+  reqURL = mBuildListURL + '/checkUpdate';
   log('Ajax: Retrieving "' + reqURL + '"...');
-  $.ajax({ type: 'GET', url: reqURL, dataType: 'json' })
+  $.ajax({ type: 'GET', url: reqURL, data: { device: $('#devices option:selected').text() }, dataType: 'json' })
   .done(function(json_object) { log('Ajax: success!'); rendertable(json_object); $('.info').remove(); })
   .fail(function (response) { if (response.responseText == 'error') { log('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>'); } });
 }
@@ -75,7 +84,7 @@ function showdevices()
 }
 
 // Start the Ajax request and run the functions, build the available device list.
-reqURL = 'https://mirror.codebucket.de/cosp/getdevices.php';
+reqURL = mDeviceListURL;
 log('Ajax: Retrieving "' + reqURL + '"...');
 $.ajax({ type: 'GET', url: reqURL, dataType: 'json' })
 .always(function() { $('.preloader-wrapper').fadeOut(atime); setTimeout(function() { $('.preloader-wrapper').remove() }, atime); })
