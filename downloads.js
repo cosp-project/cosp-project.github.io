@@ -43,6 +43,32 @@ function loading()
   return '<div class="preloader-wrapper big active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div>';
 }
 
+// Build a more elegant date format off a YYMMdd string.
+function getDate(datestr)
+{
+  // Build an array in the original order: YY-MM-dd.
+  cnt = 0; parsed = [ '', '', '' ];
+  for (i = 0; i < datestr.length; i++)
+  {
+    if (i > 3)
+    {
+      parsed[2] += datestr[i];
+    }
+    else
+    {
+      if (i > 1)
+      {
+        parsed[1] += datestr[i];
+      }
+      else
+      {
+        parsed[0] += datestr[i];
+      }
+    }
+  }
+  return parsed;
+}
+
 // Build the table for the selected entry available
 function update()
 {
@@ -50,19 +76,33 @@ function update()
   {
     $('#builds').remove();
   }
-  // Request the list of builds.
-  reqURL = mBuildListURL + '/checkUpdate';
+  // Request the latest download.
+  reqURL = mBuildListURL + '/latestDownload';
   log('Ajax: Retrieving "' + reqURL + '"...');
   $.ajax({ type: 'GET', url: reqURL, data: { device: $('#devices option:selected').text() }, dataType: 'json' })
-  .done(function(json_object) { log('Ajax: success!'); rendertable(json_object); $('.info').remove(); })
+  .done(function(basic_json_object) { log('Ajax: success!');
+    // Request more details about the build.
+    reqURL = mBuildListURL + '/checkUpdate';
+    log('Ajax: Retrieving "' + reqURL + '"...');
+    $.ajax({ type: 'GET', url: reqURL, data: { device: $('#devices option:selected').text(), date: basic_json_object.date }, dataType: 'json' })
+    .done(function(advanced_json_object) {
+      log('Ajax: success!'); $('.info').remove();
+      // Reuse date as MMddYY.
+      DeviceBuildData = [ basic_json_object.date, advanced_json_object.changeLog, basic_json_object.download ];
+      rendertable(DeviceBuildData);
+     })
+    .fail(function (response) { if (response.responseText == 'error') { log('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>'); } });
+  })
   .fail(function (response) { if (response.responseText == 'error') { log('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>'); } });
 }
 
 function rendertable(DeviceBuildList)
 {
-  DeviceBuildTable = '<tr> <th>Changelog</th>  <th> Download </th> </tr>';
-  //                                                     \/ Replace newlines for <br>
-  DeviceBuildTable += tr(td(DeviceBuildList['changeLog']).replace(/\n/g, '<br>') + (td(DeviceBuildList['download']) === '' ? td(DeviceBuildList['download']) : td('<span class="err">Unable to retrieve download URL.</span>')));
+  ReleaseDate = getDate(String(DeviceBuildList[0])); ReleaseDate = ReleaseDate[1] + '/' + ReleaseDate[2] + '/' + ReleaseDate[0];
+  DownloadURL = (DeviceBuildList[2] === '' ? '<span class="err">Unable to retrieve download URL.</span>' : '<a href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>')
+  DeviceBuildTable = '<tr> <th> Release date </th>  <th>Changelog</th>  <th> Download </th> </tr>';
+  //                                                                            \/ Replace newlines for <br>
+  DeviceBuildTable += tr(td(ReleaseDate) + td(DeviceBuildList[1]).replace(/\n/g, '<br>') + td(DownloadURL));
   $('#device-list').append(table(DeviceBuildTable));
 }
 
