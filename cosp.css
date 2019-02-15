@@ -13,6 +13,7 @@
 
 td { vertical-align: top; }
 
+#buttons_table table tbody tr { border: 0; }
 #buttons_mobile { display: none; }
 @media only screen and (max-width: 768px)
 {
@@ -21,4 +22,3 @@ td { vertical-align: top; }
  #buttons_mobile tbody tr td { text-align: center; }
  #buttons_mobile tbody tr td a { width: 90%; }
 }
-*/
