@@ -222,7 +222,7 @@ function rendertable(DeviceBuildList)
   }
   else
   {
-    DownloadURL = '<a href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>';
+    DownloadURL = '<a class="blue-grey-text" href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>';
   }
   //                                                                                                                 \/ Replace newlines for <br>
   DeviceBuildTable =  tr(th('Release date'))  + tr(td(ReleaseDate)) + tr(th('Changelog')) + tr(td(DeviceBuildList[1]).replace(/\n/g, '<br>')) + tr(th('Download')) + tr(td(DownloadURL)) + '</tbody>';
