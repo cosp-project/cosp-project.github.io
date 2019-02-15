@@ -11,7 +11,9 @@ var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
 var mDeviceListURL = 'https://mirror.codebucket.de/cosp/getdevices.php';
 
 // Display debugging info in console (only if enabled)
-function log(info) { if (debug) { console.log(info); } }
+function logi(info) { if (debug) { console.log(info); } }
+function loge(info) { if (debug) { console.error(info); } }
+function logw(info) { if (debug) { console.warn(info); } }
 
 // Build HTML selectors
 function select(options)
@@ -72,34 +74,59 @@ function getDate(datestr)
 // Build the table for the selected entry available
 function update()
 {
-  if ($('#builds').length)
+  if ($('#builds').length || $('.err').length)
   {
-    $('#builds').remove();
+    $('#builds').remove(); $('.err').remove();
   }
   // Request the latest download.
   reqURL = mBuildListURL + '/latestDownload';
-  log('Ajax: Retrieving "' + reqURL + '"...');
+  logi('Ajax: Retrieving "' + reqURL + '"...');
   $.ajax({ type: 'GET', url: reqURL, data: { device: $('#devices option:selected').text() }, dataType: 'json' })
-  .done(function(basic_json_object) { log('Ajax: success!');
+  .done(function(basic_json_object) { logi('Ajax: success!');
     // Request more details about the build.
     reqURL = mBuildListURL + '/checkUpdate';
-    log('Ajax: Retrieving "' + reqURL + '"...');
+    logi('Ajax: Retrieving "' + reqURL + '"...');
     $.ajax({ type: 'GET', url: reqURL, data: { device: $('#devices option:selected').text(), date: basic_json_object.date }, dataType: 'json' })
     .done(function(advanced_json_object) {
-      log('Ajax: success!'); $('.info').remove();
+      logi('Ajax: success!'); $('.info').remove();
       // Reuse date as MMddYY.
       DeviceBuildData = [ basic_json_object.date, advanced_json_object.changeLog, basic_json_object.download ];
       rendertable(DeviceBuildData);
      })
-    .fail(function (response) { if (response.responseText == 'error') { log('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>'); } });
+    .fail(function (response) {
+      if (response.responseText == 'error')
+      {
+        loge('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>');
+      }
+    });
   })
-  .fail(function (response) { if (response.responseText == 'error') { log('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>'); } });
+  .fail(function (response) {
+    if (response.responseText == 'error')
+    {
+      loge('Ajax: the API reported an error.'); $('.info').remove(); $('#devices').append('<p class="info">No builds found.</p>');
+    }
+    else
+    {
+      if (typeof(response.responseText) != 'string')
+      {
+        loge('Ajax: the API reported an error, the "responseText" property of "response" isn\'t a string. Is the server down? No internet connection?'); $('.info').remove(); $('#devices').append('<p class="err">Couldn\'t reach server.</p>');
+      }
+    }
+  });
 }
 
 function rendertable(DeviceBuildList)
 {
   ReleaseDate = getDate(String(DeviceBuildList[0])); ReleaseDate = ReleaseDate[1] + '/' + ReleaseDate[2] + '/' + ReleaseDate[0];
-  DownloadURL = (DeviceBuildList[2] === '' ? '<span class="err">Unable to retrieve download URL.</span>' : '<a href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>')
+  if (DeviceBuildList[2] === '')
+  {
+    logw('Unable to retrieve the download URL while parsing the response.');
+    DownloadURL = '<span class="err">Unable to retrieve download URL.</span>';
+  }
+  else
+  {
+    DownloadURL = '<a href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>';
+  }
   DeviceBuildTable = '<tr> <th> Release date </th>  <th>Changelog</th>  <th> Download </th> </tr>';
   //                                                                            \/ Replace newlines for <br>
   DeviceBuildTable += tr(td(ReleaseDate) + td(DeviceBuildList[1]).replace(/\n/g, '<br>') + td(DownloadURL));
@@ -125,11 +152,11 @@ function showdevices()
 
 // Start the Ajax request and run the functions, build the available device list.
 reqURL = mDeviceListURL;
-log('Ajax: Retrieving "' + reqURL + '"...');
+logi('Ajax: Retrieving "' + reqURL + '"...');
 $.ajax({ type: 'GET', url: reqURL, dataType: 'json' })
 .always(function() { $('.preloader-wrapper').fadeOut(atime); setTimeout(function() { $('.preloader-wrapper').remove() }, atime); })
-.done(function (json_array) { log('Ajax: success!'); mDeviceList = json_array; showdevices(); } )
-.fail(function() { log('Ajax: the API reported an error.'); $('#devices').append('<p class="err">Unable to retrieve device list.</p>'); }
+.done(function (json_array) { logi('Ajax: success!'); mDeviceList = json_array; showdevices(); } )
+.fail(function() { loge('Ajax: the API reported an error.'); $('#devices').append('<p class="err">Unable to retrieve device list.</p>'); }
 );
 
 $(document).ready(function()
