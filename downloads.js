@@ -28,7 +28,11 @@ function option(value, html)
 // Build HTML tables
 function table(data)
 {
-  return '<table class="responsive-table" id="builds">' + data + '</table>';
+  return '<table id="builds">' + data + '</table>';
+}
+function th(data)
+{
+  return '<th>' + data + '</th>';
 }
 function td(data)
 {
@@ -127,9 +131,8 @@ function rendertable(DeviceBuildList)
   {
     DownloadURL = '<a href="' + DeviceBuildList[2] + '">' + DeviceBuildList[2] + '</a>';
   }
-  DeviceBuildTable = '<tr> <th> Release date </th>  <th>Changelog</th>  <th> Download </th> </tr>';
-  //                                                                            \/ Replace newlines for <br>
-  DeviceBuildTable += tr(td(ReleaseDate) + td(DeviceBuildList[1]).replace(/\n/g, '<br>') + td(DownloadURL));
+  //                                                                                                                 \/ Replace newlines for <br>
+  DeviceBuildTable =  tr(th('Release date'))  + tr(td(ReleaseDate)) + tr(th('Changelog')) + tr(td(DeviceBuildList[1]).replace(/\n/g, '<br>')) + tr(th('Download')) + tr(td(DownloadURL)) + '</tbody>';
   $('#device-list').append(table(DeviceBuildTable));
 }
 
