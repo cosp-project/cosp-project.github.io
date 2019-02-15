@@ -1,8 +1,8 @@
 // Global animation time (ms)
-var atime = 500;
+var mAtime = 500;
 
 // Miscelaneous global variables initialization
-var startup = true; var mDeviceList = null; var debug = false; var mStorExpirationTime = 1; // (hours)
+var mDeviceList = null; var debug = false; var mStorExpirationTime = 1; // (hours)
 
 // Build list server URL
 var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
@@ -231,10 +231,10 @@ function rendertable(DeviceBuildList)
 
 function showdevices(DeviceList)
 {
-  $('.preloader-wrapper').fadeOut(atime);
+  $('.preloader-wrapper').fadeOut(mAtime);
   setTimeout(function(){
     $('.preloader-wrapper').remove();
-  }, atime);
+  }, mAtime);
   DevicePicker = '';
   for (i = 0; i < DeviceList.length; i++)
   {
@@ -245,9 +245,9 @@ function showdevices(DeviceList)
    $('#devices').append(select(DevicePicker));
    $('select').formSelect();
    $('#devices').hide();
-   $('#devices').fadeIn(atime);
+   $('#devices').fadeIn(mAtime);
    update();
-  }, atime);
+  }, mAtime);
 }
 
 // Start the Ajax request and run the functions, build the available device list.
@@ -279,7 +279,7 @@ else
   reqURL = mDeviceListURL;
   logi('Ajax: Retrieving "' + reqURL + '"...');
   $.ajax({ type: 'GET', url: reqURL, dataType: 'json' })
-  .always(function() { $('.preloader-wrapper').fadeOut(atime); setTimeout(function() { $('.preloader-wrapper').remove() }, atime); })
+  .always(function() { $('.preloader-wrapper').fadeOut(mAtime); setTimeout(function() { $('.preloader-wrapper').remove() }, mAtime); })
   .done(function (json_array) { logi('Ajax: success!'); mDeviceList = json_array; showdevices(); } )
   .fail(function() { loge('Ajax: the API reported an error.'); $('#devices').append('<p class="err">Unable to retrieve device list.</p>'); }
   );
