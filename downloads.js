@@ -2,7 +2,7 @@
 var atime = 500;
 
 // Miscelaneous global variables initialization
-var startup = true; var mDeviceList = null; var debug = true; var mStorExpirationTime = 1; // (hours)
+var startup = true; var mDeviceList = null; var debug = false; var mStorExpirationTime = 1; // (hours)
 
 // Build list server URL
 var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
