@@ -35,6 +35,11 @@ main { flex: 1 0 auto; }
 
 /* blue-grey theme, darken-2 */
 .dropdown-content li > a, .dropdown-content li > span, div input, .circle {
-    color: #37474f !important;
-    border-color: #37474f !important;
+  color: #37474f !important;
+  border-color: #37474f !important;
+}
+
+.container #section_not_last, .container .section .row {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
