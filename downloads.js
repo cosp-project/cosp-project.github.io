@@ -99,6 +99,10 @@ function update()
   {
     if ((localStorage.getItem(DeviceCodename + '_basic') === null && localStorage.getItem(DeviceCodename + '_advanced') === null && localStorage.getItem(DeviceCodename + '_failure') === null) || (localStorage.getItem('global_expiration') === null || (getTime() > localStorage.getItem('global_expiration'))))
     {
+      StorExpirationTime = (mStorExpirationTime * 3600000);
+      logi('The cached data will expire in ' + mStorExpirationTime + ' hour(s) (or ' + StorExpirationTime + ' ms).');
+      StorExpirationTime += getTime();
+      localStorage.setItem('global_expiration', StorExpirationTime);
       // Request the latest download.
       reqURL = mBuildListURL + '/latestDownload';
       logi('Ajax: Retrieving "' + reqURL + '"...');
@@ -115,11 +119,6 @@ function update()
           logi('Ajax: success!');
           logi('Saving the advanced build information for ' + DeviceCodename + ' as a HTML5 web storage item "' + DeviceCodename + '_advanced"...');
           localStorage.setItem(DeviceCodename + '_advanced', JSON.stringify(advanced_json_object));
-          StorExpirationTime = (mStorExpirationTime * 3600000);
-          logi('All the required data has been gathered, an expiration date has been set.')
-          logi('The cached data will expire in ' + mStorExpirationTime + ' hour(s) (or ' + StorExpirationTime + ' ms).');
-          StorExpirationTime += getTime();
-          localStorage.setItem('global_expiration', StorExpirationTime);
           $('.info').remove();
           // Reuse date as MMddYY.
           DeviceBuildData = [ basic_json_object.date, advanced_json_object.changeLog, basic_json_object.download ];
