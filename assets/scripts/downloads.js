@@ -121,7 +121,7 @@ function update()
       $.ajax({ type: 'GET', url: reqURL, data: { device: DeviceCodename }, dataType: 'json' })
       .done(function(basic_json_object) {
         logi('Ajax: success!');
-        logi('Saving the basic build information for ' + DeviceCodename + ' as a HTML5 web storage item "' + DeviceCodename + '_basic"...');
+        logi('Saving the basic build information for ' + DeviceCodename + ' as a web storage item "' + DeviceCodename + '_basic"...');
         localStorage.setItem(DeviceCodename + '_basic', JSON.stringify(basic_json_object));
         // Request more details about the build.
         reqURL = mBuildListURL + '/checkUpdate';
@@ -129,7 +129,7 @@ function update()
         $.ajax({ type: 'GET', url: reqURL, data: { device: DeviceCodename, date: basic_json_object.date }, dataType: 'json' })
         .done(function(advanced_json_object) {
           logi('Ajax: success!');
-          logi('Saving the advanced build information for ' + DeviceCodename + ' as a HTML5 web storage item "' + DeviceCodename + '_advanced"...');
+          logi('Saving the advanced build information for ' + DeviceCodename + ' as a web storage item "' + DeviceCodename + '_advanced"...');
           localStorage.setItem(DeviceCodename + '_advanced', JSON.stringify(advanced_json_object));
           $('.info').remove();
           // Reuse date as MMddYY.
@@ -161,7 +161,7 @@ function update()
     else
     {
       $('.info').remove();
-      logi('HTML5 web storage entries have been found for the selected device "' + DeviceCodename + '".');
+      logi('Web storage entries have been found for the selected device "' + DeviceCodename + '".');
       logi('Found: ');
       logi(' - ' + localStorage.getItem(DeviceCodename + '_basic') === null ? '' : DeviceCodename + '_basic: ' + localStorage.getItem(DeviceCodename + '_basic'));
       logi(' - ' + localStorage.getItem(DeviceCodename + '_advanced') === null ? '' :  DeviceCodename + '_advanced: ' + localStorage.getItem(DeviceCodename + '_advanced'));
@@ -187,14 +187,14 @@ function update()
     $.ajax({ type: 'GET', url: reqURL, data: { device: DeviceCodename }, dataType: 'json' })
     .done(function(basic_json_object) {
       logi('Ajax: success!');
-      logi('Saving the basic build information for ' + DeviceCodename + ' as a HTML5 web storage item "' + DeviceCodename + '_basic"...');
+      logi('Saving the basic build information for ' + DeviceCodename + ' as a web storage item "' + DeviceCodename + '_basic"...');
       // Request more details about the build.
       reqURL = mBuildListURL + '/checkUpdate';
       logi('Ajax: Retrieving "' + reqURL + '"...');
       $.ajax({ type: 'GET', url: reqURL, data: { device: DeviceCodename, date: basic_json_object.date }, dataType: 'json' })
       .done(function(advanced_json_object) {
         logi('Ajax: success!');
-        logi('Saving the advanced build information for ' + DeviceCodename + ' as a HTML5 web storage item "' + DeviceCodename + '_advanced"...');
+        logi('Saving the advanced build information for ' + DeviceCodename + ' as a web storage item "' + DeviceCodename + '_advanced"...');
         $('.info').remove();
         // Reuse date as MMddYY.
         DeviceBuildData = [ basic_json_object.date, advanced_json_object.changeLog, basic_json_object.download ];
@@ -274,7 +274,7 @@ if (mHasHTML5Stor)
       logi('Ajax: success!');
       mDeviceList = json_array;
       showdevices(mDeviceList);
-      logi('Saving mDeviceList as a HTML5 web storage item "mDeviceList"...');
+      logi('Saving mDeviceList as a web storage item "mDeviceList"...');
       localStorage.setItem('mDeviceList', JSON.stringify(mDeviceList));
     })
     .fail(function() { loge('Ajax: the API reported an error.'); $('#devices').append('<p class="err">Unable to retrieve device list.</p>'); }
@@ -282,6 +282,7 @@ if (mHasHTML5Stor)
   }
   else
   {
+    logi('A web storage copy of "mDeviceList" has been found, using it instead of retrieving from remote.');
     showdevices(JSON.parse(localStorage.mDeviceList));
   }
 }
