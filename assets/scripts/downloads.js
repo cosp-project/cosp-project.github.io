@@ -2,7 +2,7 @@
 var mAtime = 500;
 
 // Miscelaneous global variables initialization
-var mDeviceList = null; var debug = false; var mStorExpirationTime = 1; // (hours)
+var debug = false; var mStorExpirationTime = 1; // (hours)
 
 // Build list server URL
 var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
@@ -10,11 +10,23 @@ var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
 // Device list server url
 var mDeviceListURL = 'https://mirror.codebucket.de/cosp/getdevices.php';
 
-// Check if HTML5 blob storage is available.
+/* Check if HTML5 blob storage is available.
+
+   As seen here: https://stackoverflow.com/questions/16427636/check-if-localstorage-is-available */
 if (typeof(Storage) !== 'undefined')
 {
-  logi('HML5 blob storage support detected.');
-  var mHasHTML5Stor = true;
+  try
+  {
+    localStorage.setItem('check_availability', 'available');
+    if (localStorage.getItem('check_availability') === 'available')
+    {
+      logi('HML5 blob storage support detected.');
+      var mHasHTML5Stor = true;
+    }
+  } catch (e) {
+    logw('HML5 blob storage support is missing or broken.\nThe error that\'s shown below was caught while testing the feature.\n\n' + e);
+    var mHasHTML5Stor = false;
+  }
 }
 else
 {
@@ -279,7 +291,7 @@ else
   logi('Ajax: Retrieving "' + reqURL + '"...');
   $.ajax({ type: 'GET', url: reqURL, dataType: 'json' })
   .always(function() { $('.preloader-wrapper').fadeOut(mAtime); setTimeout(function() { $('.preloader-wrapper').remove() }, mAtime); })
-  .done(function (json_array) { logi('Ajax: success!'); mDeviceList = json_array; showdevices(); } )
+  .done(function (json_array) { logi('Ajax: success!'); mDeviceList = json_array; showdevices(mDeviceList); } )
   .fail(function() { loge('Ajax: the API reported an error.'); $('#devices').append('<p class="err">Unable to retrieve device list.</p>'); }
   );
 }
