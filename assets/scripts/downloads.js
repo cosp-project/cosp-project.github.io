@@ -5,7 +5,7 @@ var mAtime = 500;
 var debug = false; var mStorExpirationTime = 1; // (hours)
 
 // Build list server URL
-var mBuildListURL = 'https://cosp-webserver.herokuapp.com';
+var mBuildListURL = 'https://ota.cosp-project.org';
 
 // Device list server url
 var mDeviceListURL = 'https://mirror.codebucket.de/cosp/getdevices.php';
