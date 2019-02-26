@@ -21,6 +21,8 @@ if (typeof(Storage) !== 'undefined')
     if (localStorage.getItem('check_availability') === 'available')
     {
       logi('HML5 blob storage support detected.');
+      // Just a temporary workaround.
+      localStorage.clear();
       var mHasHTML5Stor = true;
     }
   } catch (e) {
