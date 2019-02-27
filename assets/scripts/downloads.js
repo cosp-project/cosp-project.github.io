@@ -21,8 +21,6 @@ if (typeof(Storage) !== 'undefined')
     if (localStorage.getItem('check_availability') === 'available')
     {
       logi('HML5 blob storage support detected.');
-      // Just a temporary workaround.
-      localStorage.clear();
       var mHasHTML5Stor = true;
     }
   } catch (e) {
@@ -111,7 +109,12 @@ function update()
   }
   if (mHasHTML5Stor)
   {
-    if ((localStorage.getItem(DeviceCodename + '_basic') === null && localStorage.getItem(DeviceCodename + '_advanced') === null && localStorage.getItem(DeviceCodename + '_failure') === null) || (localStorage.getItem('global_expiration') === null || (getTime() > localStorage.getItem('global_expiration'))))
+    if ((localStorage.getItem('global_expiration') === null || (getTime() > parseInt(localStorage.getItem('global_expiration')))))
+    {
+      // If the expiration time passed, wipe the whole cache.
+      localStorage.clear();
+    }
+    if ((localStorage.getItem(DeviceCodename + '_basic') === null && localStorage.getItem(DeviceCodename + '_advanced') === null && localStorage.getItem(DeviceCodename + '_failure') === null))
     {
       StorExpirationTime = (mStorExpirationTime * 3600000);
       logi('The cached data will expire in ' + mStorExpirationTime + ' hour(s) (or ' + StorExpirationTime + ' ms).');
@@ -177,7 +180,7 @@ function update()
        DeviceBuildData = [ JSON.parse(localStorage.getItem(DeviceCodename + '_basic')).date, JSON.parse(localStorage.getItem(DeviceCodename + '_advanced')).changeLog, JSON.parse(localStorage.getItem(DeviceCodename + '_basic')).download ];
        rendertable(DeviceBuildData);
       }
-      StorExpirationTimeRem = ((localStorage.getItem('global_expiration') - getTime()) / 1000).toFixed(2);
+      StorExpirationTimeRem = ((parseInt(localStorage.getItem('global_expiration')) - getTime()) / 1000).toFixed(2);
       logi(StorExpirationTimeRem + ' seconds remaining before refreshing the cache.');
     }
   }
